@@ -1,36 +1,34 @@
-# Временная проба EchoMTG: ищем готовые муверы + свежая история 4 сетов
-import json, time, urllib.request, urllib.error
+# Временная проба: публичные выгрузки Cardmarket + CardTrader без токена
+import json, urllib.request, urllib.error
 
-BASE = "https://api.echomtg.com/api/"
-def raw(path):
-    req = urllib.request.Request(BASE + path, headers={"User-Agent": "Mozilla/5.0"})
+def raw(url):
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            return r.status, r.read().decode("utf-8", "replace")
+        with urllib.request.urlopen(req, timeout=120) as r:
+            return r.status, r.read()
     except urllib.error.HTTPError as e:
-        return e.code, ""
+        return e.code, e.read()[:300]
     except Exception as e:
-        return 0, repr(e)
-def get(path):
-    for _ in range(3):
-        c, b = raw(path)
-        try: return json.loads(b)
-        except Exception: time.sleep(2)
-    return {}
+        return 0, repr(e).encode()
 
-out = {"guesses": {}, "items": []}
-for p in ["data/top_movers/", "data/topmovers/", "data/market_movers/", "data/gainers/", "data/losers/",
-          "data/price_changes/", "data/changes/", "data/popular/", "data/hot/", "data/biggest_movers/",
-          "market/movers/", "data/item_movers/", "data/set_movers/?set_code=FRA", "data/spikes/",
-          "data/watchlist/", "data/trending_items/", "data/most_valuable/"]:
-    c, b = raw(p)
-    out["guesses"][p] = [c, b[:400]]
-for code in ("FRA", "FRC", "MSH", "MSC"):
-    for it in get("data/set/?set_code=" + code).get("set", {}).get("items", []):
-        h = get("data/item_history/?emid=%s" % it["emid"]).get("data") or {}
-        out["items"].append({"set": code, "emid": it["emid"], "name": it["name"],
-                             "date": h.get("date"), "regular": h.get("regular"), "foil": h.get("foil")})
-        time.sleep(0.15)
+out = {}
+S3 = "https://downloads.s3.cardmarket.com/productCatalog/"
+for name, url in (("pg", S3 + "priceGuide/price_guide_1.json"),
+                  ("singles", S3 + "productList/products_singles_1.json"),
+                  ("ct_noauth", "https://api.cardtrader.com/api/v2/expansions")):
+    c, b = raw(url)
+    rec = {"status": c, "bytes": len(b)}
+    try:
+        j = json.loads(b)
+        rec["keys"] = list(j.keys()) if isinstance(j, dict) else "list"
+        for k in ("priceGuides", "products"):
+            if isinstance(j, dict) and k in j:
+                rec["count"] = len(j[k]); rec["sample"] = j[k][:3]
+        for k in ("version", "createdAt"):
+            if isinstance(j, dict) and k in j: rec[k] = j[k]
+    except Exception:
+        rec["head"] = b[:300].decode("utf-8", "replace")
+    out[name] = rec
 with open("probe/result.json", "w", encoding="utf-8") as f:
-    json.dump(out, f, ensure_ascii=False)
+    json.dump(out, f, ensure_ascii=False, indent=1)
 # КОНЕЦ ФАЙЛА

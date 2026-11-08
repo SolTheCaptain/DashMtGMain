@@ -317,9 +317,9 @@ def sheet_columns(card, tz):
             j = j * 26 + ord(ch) - 64
         j -= 1
         title = cell(rows[hr], j) if hr < len(rows) else ""
-        vals = [cell(r, j) for r in rows[hr + 1:] if cell(r, j)][:int(card.get("count", 30))]
+        vals = [cell(r, j) for r in rows[hr + 1:] if cell(r, j)]
         if title or vals:
-            cols.append({"title": title, "values": vals})
+            cols.append({"title": title, "values": vals[:int(card.get("count", 30))], "n": len(vals)})  # n — всего, для счётчика
     lines = [f"{c['title'] or '—'}: {', '.join(c['values']) or '—'}" for c in cols]
     return {"lines": lines or ["Пусто."], "cols": cols, "per_row": card.get("per_row")}
 

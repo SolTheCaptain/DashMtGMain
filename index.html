@@ -526,7 +526,7 @@ function bodyEl(item) {
     g.style.gridTemplateColumns = `repeat(${Math.min(item.cols.length, item.per_row || 99)}, minmax(0, 1fr))`;  // по per_row в ряд
     for (const c of item.cols) {
       const sub = el("div", "sub");
-      sub.append(el("h3", "", c.title || "—"));
+      sub.append(el("h3", "", (c.title || "—") + (c.n ? ` (${c.n})` : "")));  // «ПОЧТА (6)»
       const sb = el("div", "body");
       if (c.values.length) { const ul = el("ul"); c.values.forEach(v => ul.append(el("li", "", v))); sb.append(ul); }
       else sb.append(el("div", "none", "—"));

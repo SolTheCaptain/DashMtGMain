@@ -618,7 +618,7 @@ function matrixEl(c) {
     mx.append(el("span", "mk", s.title));
     (s.items || []).forEach(it => {
       const x = el(it.url ? "a" : "span", "sb " + it.state);
-      const l = el("span", "l", it.date || it.info || "—");  // «26.10», «5 до 02.11 20:00»
+      const l = el("span", "l", it.date || it.info || "—");  // «26.10», «5(1) до 02.11 20:00»
       if (it.date && daysSince(it.date) > STALE_DAYS) l.classList.add("old");
       x.append(l);
       x.title = ((TIPS[s.id] || {})[it.state] || "") + (it.count ? ": " + it.count : "");

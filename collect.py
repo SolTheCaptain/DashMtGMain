@@ -460,7 +460,7 @@ def left_seconds(t):
 
 
 def topdeck_aucs(card, tz):
-    """Аукционы участника: сколько идёт сейчас и когда закончится ближайший — «N до ДД.ММ ЧЧ:ММ».
+    """Аукционы участника: сколько идёт сейчас (в скобках — без ставок) и когда закончится ближайший — «N(K) до ДД.ММ ЧЧ:ММ».
     TopDeck пишет только остаток («1д 23ч», «21ч 17мин»), поэтому окончание = время сбора + остаток."""
     items, lines, fails = [], [], 0
     for m in card.get("members", []):
@@ -470,10 +470,15 @@ def topdeck_aucs(card, tz):
         else:
             try:
                 html = topdeck_get(f"/apps/toptrade/member/{m['id']}/aucs", m.get("cookie", "TOPDECK_COOKIE"))
-                left = [(left_seconds(x), x) for x in re.findall(r'js-time-left"[^>]*>([^<]*)', html)]
-                left = sorted(x for x in left if x[0] > 0)
+                left, nobid = [], 0
+                for row in re.split(r"(?i)<tr\b", html):  # строка лота: остаток времени + ставка («старт 500» = ставок нет)
+                    t = re.search(r'js-time-left"[^>]*>([^<]*)', row)
+                    if t and left_seconds(t.group(1)) > 0:
+                        left.append((left_seconds(t.group(1)), t.group(1)))
+                        nobid += bool(re.search(r"(?i)старт", re.sub(r"<[^>]+>", " ", row)))
+                left.sort()
                 it["state"] = "shown" if left else "stub"
-                info = str(len(left))
+                info = str(len(left)) + (f"({nobid})" if nobid else "")  # «5(1)» — в скобках несыгравшие
                 if left:  # окончание ближайшего: время сбора + остаток; больше суток TopDeck минут не даёт — тогда «:00»
                     sec = left[0][0]
                     end = datetime.now(tz) + timedelta(seconds=sec)

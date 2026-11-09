@@ -185,6 +185,8 @@ pre .cut { font-size: 11px; }
 .cp { font: inherit; color: var(--gold-soft); background: #f2c14e0d; border: 1px solid #f2c14e66; border-radius: 6px;
   padding: 0 6px; cursor: pointer; text-align: left; letter-spacing: normal; text-transform: none; }
 .cprow { flex: none; display: flex; gap: 8px; margin: 4px 0 8px; }
+.mx .cprow.mxrow { grid-column: 2 / -1; margin: 0; }
+.mx .cprow.mxrow .cp { flex: 1 1 0; text-align: center; padding: 5px 2px; border-radius: 8px; font-weight: 700; }
 .cpbox { flex: none; margin-top: 8px; }
 .cpbox .cprow { margin: 0; }
 /* подпись над кнопками — как заголовок подкарточки, но мельче: между ним и текстом таблицы */
@@ -631,6 +633,10 @@ function matrixEl(c) {
       if (it.url) { x.href = it.url; x.target = "_blank"; x.rel = "noopener"; }
       mx.append(x);
     });
+  }
+  if (c.buttons && c.buttons.length) {  // последний ряд: копировалки во всю ширину участников (адреса ПВЗ)
+    mx.append(el("span", "mk", c.buttons_title || ""));
+    const row = buttonsEl(c); row.classList.add("mxrow"); mx.append(row);
   }
   box.append(mx);
   for (const s of c.sections) if (!s.ok) box.append(warnEl({ error: s.title + ": " + s.error }));

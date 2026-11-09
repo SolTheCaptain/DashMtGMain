@@ -62,6 +62,21 @@
       "id": "topdeck",
       "title": "Topdeck",
       "type": "group",
+      "buttons_title": "ПВЗ",
+      "buttons": [
+        {
+          "label": "Яндекс",
+          "copy": "$PVZ_YANDEX"
+        },
+        {
+          "label": "Озон",
+          "copy": "$PVZ_OZON"
+        },
+        {
+          "label": "СДЕК",
+          "copy": "$PVZ_CDEK"
+        }
+      ],
       "sections": [
         {
           "id": "trades",
@@ -129,7 +144,10 @@
         "U"
       ],
       "head_row": 1,
-      "per_row": 3
+      "per_row": 3,
+      "rename": {
+        "Единорог": "Рог"
+      }
     },
     {
       "id": "stock",

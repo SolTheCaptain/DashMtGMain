@@ -317,6 +317,7 @@ def sheet_columns(card, tz):
             j = j * 26 + ord(ch) - 64
         j -= 1
         title = cell(rows[hr], j) if hr < len(rows) else ""
+        title = {k.lower(): v for k, v in card.get("rename", {}).items()}.get(title.lower(), title)  # короткие подписи: «Единорог» → «Рог»
         vals = [cell(r, j) for r in rows[hr + 1:] if cell(r, j)]
         if title or vals:
             cols.append({"title": title, "values": vals[:int(card.get("count", 30))], "n": len(vals)})  # n — всего, для счётчика
@@ -670,6 +671,10 @@ def run_group(card, tz, prev_card, now_iso):
                     out["badge"] = pb
     if card.get("link"):  # иконка заголовка — ссылка
         out["link"] = card["link"]
+    if card.get("buttons"):  # кнопки-копировалки карточки (Topdeck: адреса ПВЗ)
+        out["buttons"] = card["buttons"]
+        if card.get("buttons_title"):
+            out["buttons_title"] = card["buttons_title"]
     return out
 
 

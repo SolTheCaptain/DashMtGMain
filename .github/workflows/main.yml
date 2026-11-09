@@ -39,6 +39,9 @@ jobs:
           USERS_SHEET_URL: ${{ secrets.USERS_SHEET_URL }}
           PAY_SOL: ${{ secrets.PAY_SOL }}
           PAY_SAT: ${{ secrets.PAY_SAT }}
+          PVZ_YANDEX: ${{ secrets.PVZ_YANDEX }}
+          PVZ_OZON: ${{ secrets.PVZ_OZON }}
+          PVZ_CDEK: ${{ secrets.PVZ_CDEK }}
           PREV_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/data.json
 
       - name: Подготовить сайт

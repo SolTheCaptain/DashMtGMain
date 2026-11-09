@@ -671,10 +671,8 @@ def run_group(card, tz, prev_card, now_iso):
                     out["badge"] = pb
     if card.get("link"):  # иконка заголовка — ссылка
         out["link"] = card["link"]
-    if card.get("buttons"):  # кнопки-копировалки карточки (Topdeck: адреса ПВЗ)
+    if card.get("buttons"):  # кнопки-копировалки внизу карточки (Люди: адреса ПВЗ)
         out["buttons"] = card["buttons"]
-        if card.get("buttons_title"):
-            out["buttons_title"] = card["buttons_title"]
     return out
 
 

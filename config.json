@@ -31,6 +31,20 @@
       "title": "Люди",
       "type": "group",
       "link": "$USERS_SHEET_URL",
+      "buttons": [
+        {
+          "label": "Яндекс",
+          "copy": "$PVZ_YANDEX"
+        },
+        {
+          "label": "Озон",
+          "copy": "$PVZ_OZON"
+        },
+        {
+          "label": "СДЕК",
+          "copy": "$PVZ_CDEK"
+        }
+      ],
       "sections": [
         {
           "id": "payments",
@@ -62,21 +76,6 @@
       "id": "topdeck",
       "title": "Topdeck",
       "type": "group",
-      "buttons_title": "ПВЗ",
-      "buttons": [
-        {
-          "label": "Яндекс",
-          "copy": "$PVZ_YANDEX"
-        },
-        {
-          "label": "Озон",
-          "copy": "$PVZ_OZON"
-        },
-        {
-          "label": "СДЕК",
-          "copy": "$PVZ_CDEK"
-        }
-      ],
       "sections": [
         {
           "id": "trades",

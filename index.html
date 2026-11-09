@@ -185,8 +185,8 @@ pre .cut { font-size: 11px; }
 .cp { font: inherit; color: var(--gold-soft); background: #f2c14e0d; border: 1px solid #f2c14e66; border-radius: 6px;
   padding: 0 6px; cursor: pointer; text-align: left; letter-spacing: normal; text-transform: none; }
 .cprow { flex: none; display: flex; gap: 8px; margin: 4px 0 8px; }
-.mx .cprow.mxrow { grid-column: 2 / -1; margin: 0; }
-.mx .cprow.mxrow .cp { flex: 1 1 0; text-align: center; padding: 5px 2px; border-radius: 8px; font-weight: 700; }
+.cprow.cardrow { margin: 8px 0 0; }
+.cprow.cardrow .cp { flex: 1 1 0; text-align: center; padding: 5px 2px; border-radius: 8px; font-weight: 700; }
 .cpbox { flex: none; margin-top: 8px; }
 .cpbox .cprow { margin: 0; }
 /* подпись над кнопками — как заголовок подкарточки, но мельче: между ним и текстом таблицы */
@@ -552,7 +552,12 @@ function bodyEl(item) {
 // Реквизит одной кнопкой: клик копирует готовую фразу для клиента
 function copyBtn(label, value) {
   const b = el("button", "cp", label);
-  b.type = "button"; if (typeof value === "string") b.title = "Скопировать: " + value;
+  b.type = "button";
+  b.onmouseenter = () => {  // подсказка — что именно скопируется (длинные списки — первые 12 строк)
+    const v = String((typeof value === "function" ? value() : value) || "");
+    const ls = v.split("\n");
+    b.title = !v ? "Нечего копировать" : ls.length > 12 ? ls.slice(0, 12).join("\n") + `\n… ещё ${ls.length - 12}` : v;
+  };
   b.onclick = async () => {
     try { await navigator.clipboard.writeText(typeof value === "function" ? value() : value); b.classList.add("ok"); }
     catch (e) { b.classList.add("err"); }
@@ -634,10 +639,6 @@ function matrixEl(c) {
       mx.append(x);
     });
   }
-  if (c.buttons && c.buttons.length) {  // последний ряд: копировалки во всю ширину участников (адреса ПВЗ)
-    mx.append(el("span", "mk", c.buttons_title || ""));
-    const row = buttonsEl(c); row.classList.add("mxrow"); mx.append(row);
-  }
   box.append(mx);
   for (const s of c.sections) if (!s.ok) box.append(warnEl({ error: s.title + ": " + s.error }));
   return box;
@@ -674,6 +675,7 @@ function render(data) {
       const subs = el("div", "subs");
       for (const s of c.sections) subs.append(subEl(s));
       card.append(subs);
+      if (c.buttons && c.buttons.length) { const row = buttonsEl(c); row.classList.add("cardrow"); card.append(row); }  // копировалки внизу карточки (адреса ПВЗ)
     } else {
       const b = bodyEl(c);
       card.append(b);
